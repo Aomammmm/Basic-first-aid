@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>การปฐมพยาบาลเบื้องต้น</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Prompt:wght@500;700&family=Sarabun:wght@400;600&display=swap">
+    <style>
+         :root {
+            --bg: #F3F8F5;
+            --card: #fff;
+            --ink: #10201A;
+            --muted: #566A62;
+            --line: #D5E4DD;
+            --green: #0F6B52;
+            --red: #D7263D;
+            --amber: #F2A900
+        }
+        
+        @media (prefers-color-scheme:dark) {
+            :root {
+                --bg: #0C1713;
+                --card: #15251F;
+                --ink: #EAF4EF;
+                --muted: #9DB5AA;
+                --line: #27413A;
+                --green: #5FD1A5;
+                --red: #FF6B7D
+            }
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0
+        }
+        
+        html,
+        body {
+            height: 100%
+        }
+        
+        body {
+            background: var(--bg);
+            color: var(--ink);
+            font: clamp(16px, 1.9vw, 21px)/1.5 'Sarabun', 'Noto Sans Thai', sans-serif;
+            overflow: hidden
+        }
+        
+        h1,
+        h2,
+        b,
+        .pill {
+            font-family: 'Prompt', 'Noto Sans Thai', sans-serif
+        }
+        
+        .slide {
+            --c: #0F8A6A;
+            position: absolute;
+            inset: 0;
+            display: grid;
+            grid-template-columns: minmax(260px, 5fr) 7fr;
+            gap: 4vw;
+            align-items: center;
+            padding: 7vh 6vw 15vh;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateX(5vw);
+            transition: opacity .5s, transform .5s, visibility 0s .5s;
+            overflow-y: auto;
+            isolation: isolate
+        }
+        
+        .slide::before {
+            content: "";
+            position: absolute;
+            z-index: -1;
+            width: 60vmax;
+            height: 60vmax;
+            right: -20vmax;
+            top: -25vmax;
+            border-radius: 50%;
+            background: radial-gradient(closest-side, color-mix(in srgb, var(--c) 22%, transparent), transparent)
+        }
+        
+        .slide::after {
+            content: "";
+            position: absolute;
+            z-index: -1;
+            inset: 0;
+            background: radial-gradient(color-mix(in srgb, var(--ink) 9%, transparent) 1.2px, transparent 1.4px) 0 0/26px 26px;
+            -webkit-mask-image: linear-gradient(90deg, transparent, #000 70%);
+            mask-image: linear-gradient(90deg, transparent, #000 70%)
+        }
+        
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            transform: none;
+            transition: opacity .5s, transform .5s
+        }
+        
+        .slide.prev {
+            transform: translateX(-5vw)
+        }
+        
+        .slide.full {
+            grid-template-columns: 1fr;
+            align-content: center
+        }
+        
+        .tile {
+            width: 64px;
+            height: 64px;
+            border-radius: 20px;
+            background: var(--c);
+            color: #fff;
+            display: grid;
+            place-items: center;
+            box-shadow: 0 12px 24px -10px var(--c);
+            margin-bottom: 1rem
+        }
+        
+        .tile svg {
+            width: 34px;
+            height: 34px
+        }
+        
+        h2 {
+            font-size: clamp(26px, 4.4vw, 52px);
+            line-height: 1.2;
+            color: var(--ink)
+        }
+        
+        h2 em {
+            font-style: normal;
+            color: var(--c)
+        }
+        
+        .lead {
+            color: var(--muted);
+            margin-top: .6rem;
+            max-width: 30em
+        }
+        
+        .gauge {
+            position: relative;
+            width: min(220px, 48vw);
+            margin-top: 1.4rem
+        }
+        
+        .gauge svg {
+            width: 100%;
+            transform: rotate(-90deg)
+        }
+        
+        .gauge circle {
+            fill: none;
+            stroke-width: 12;
+            stroke-linecap: round
+        }
+        
+        .gauge .t {
+            stroke: var(--line)
+        }
+        
+        .gauge .p {
+            stroke: var(--c);
+            stroke-dasharray: 528;
+            stroke-dashoffset: 528
+        }
+        
+        .active .gauge .p {
+            animation: fill 10s linear forwards
+        }
+        
+        @keyframes fill {
+            to {
+                stroke-dashoffset: 0
+            }
+        }
+        
+        .gn {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            place-content: center;
+            text-align: center;
+            line-height: 1.1
+        }
+        
+        .gn b {
+            font-size: clamp(40px, 7vw, 64px);
+            color: var(--c)
+        }
+        
+        .gn span {
+            color: var(--muted);
+            font-size: .9em
+        }
+        
+        .cap {
+            margin-top: .8rem;
+            color: var(--muted);
+            max-width: 18em
+        }
+        
+        .steps {
+            list-style: none;
+            padding: 0;
+            display: grid;
+            gap: 12px
+        }
+        
+        .steps li {
+            display: grid;
+            grid-template-columns: 46px 1fr;
+            gap: 16px;
+            align-items: center;
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-left: 6px solid var(--c);
+            border-radius: 18px;
+            padding: 13px 18px;
+            box-shadow: 0 10px 24px -16px rgba(16, 32, 26, .5)
+        }
+        
+        .steps .n {
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            background: var(--c);
+            color: #fff;
+            display: grid;
+            place-items: center;
+            font: 700 19px 'Prompt', sans-serif
+        }
+        
+        .active .steps li,
+        .active .alert,
+        .active .chips {
+            animation: rise .6s cubic-bezier(.2, .8, .2, 1) both;
+            animation-delay: calc(.25s + var(--i, 0)*.22s)
+        }
+        
+        @keyframes rise {
+            from {
+                opacity: 0;
+                transform: translateY(18px)
+            }
+        }
+        
+        .alert {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-top: 14px;
+            padding: 12px 16px;
+            border-radius: 14px;
+            background: color-mix(in srgb, var(--red) 13%, transparent);
+            color: var(--red);
+            font-weight: 600
+        }
+        
+        .alert svg {
+            width: 26px;
+            height: 26px;
+            flex-shrink: 0
+        }
+        
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 14px;
+            align-items: center;
+            color: var(--muted)
+        }
+        
+        .pill {
+            background: color-mix(in srgb, var(--c) 14%, transparent);
+            color: var(--ink);
+            border-radius: 99px;
+            padding: 5px 14px;
+            font-size: .85em
+        }
+        
+        .heart {
+            position: relative;
+            width: min(200px, 44vw);
+            aspect-ratio: 1;
+            margin-top: 1.4rem;
+            border-radius: 50%;
+            background: var(--red);
+            color: #fff;
+            display: grid;
+            place-content: center;
+            text-align: center;
+            line-height: 1.1
+        }
+        
+        .heart b {
+            font-size: clamp(44px, 8vw, 72px)
+        }
+        
+        .heart::before,
+        .heart::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 3px solid var(--red);
+            opacity: 0
+        }
+        
+        .active .heart {
+            animation: cpr .545s ease-in-out infinite
+        }
+        
+        .active .heart::before {
+            animation: ring 1.09s ease-out infinite
+        }
+        
+        .active .heart::after {
+            animation: ring 1.09s ease-out .55s infinite
+        }
+        
+        @keyframes cpr {
+            50% {
+                transform: scale(.9)
+            }
+        }
+        
+        @keyframes ring {
+            0% {
+                transform: scale(1);
+                opacity: .55
+            }
+            100% {
+                transform: scale(1.8);
+                opacity: 0
+            }
+        }
+        
+        .people {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+            gap: 12px;
+            margin-top: 1.4rem
+        }
+        
+        .people li {
+            list-style: none;
+            display: flex;
+            gap: 14px;
+            align-items: center;
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 12px 16px
+        }
+        
+        .people .n {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--c);
+            color: #fff;
+            display: grid;
+            place-items: center;
+            font: 700 18px 'Prompt', sans-serif;
+            flex-shrink: 0
+        }
+        
+        .people small {
+            display: block;
+            color: var(--muted)
+        }
+        
+        .dark {
+            --ink: #fff;
+            --muted: #CBE3D9;
+            --card: rgba(255, 255, 255, .1);
+            --line: rgba(255, 255, 255, .2);
+            color: #fff;
+            background: linear-gradient(135deg, #082E24, #0F6B52 60%, #15906F);
+            grid-template-columns: 1fr;
+            align-content: center
+        }
+        
+        .dark::after {
+            display: none
+        }
+        
+        .dark h1 {
+            font-size: clamp(36px, 8vw, 92px);
+            line-height: 1.12;
+            margin: .3em 0
+        }
+        
+        .cross {
+            width: clamp(70px, 11vw, 120px)
+        }
+        
+        .active .cross {
+            animation: float 3s ease-in-out infinite
+        }
+        
+        @keyframes float {
+            50% {
+                transform: translateY(-12px) scale(1.06)
+            }
+        }
+        
+        .ecg {
+            width: min(560px, 86vw);
+            height: 64px;
+            margin-top: 1rem
+        }
+        
+        .ecg path {
+            fill: none;
+            stroke: #7DF0C4;
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-dasharray: 640;
+            stroke-dashoffset: 640
+        }
+        
+        .active .ecg path {
+            animation: draw 3s ease-in-out infinite
+        }
+        
+        @keyframes draw {
+            60%,
+            100% {
+                stroke-dashoffset: 0
+            }
+        }
+        
+        .big {
+            font: 700 clamp(80px, 22vw, 230px)/1 'Prompt', sans-serif;
+            color: var(--amber)
+        }
+        
+        .active .big {
+            animation: pop .7s cubic-bezier(.2, 1.6, .4, 1)
+        }
+        
+        @keyframes pop {
+            from {
+                transform: scale(.5);
+                opacity: 0
+            }
+        }
+        
+        .ph {
+            position: relative;
+            width: 84px;
+            height: 84px;
+            border-radius: 50%;
+            background: var(--red);
+            display: grid;
+            place-items: center;
+            margin-bottom: 1rem
+        }
+        
+        .ph svg {
+            width: 40px;
+            height: 40px
+        }
+        
+        .ph::before,
+        .ph::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 3px solid var(--red);
+            opacity: 0
+        }
+        
+        .active .ph::before {
+            animation: ring 1.6s ease-out infinite
+        }
+        
+        .active .ph::after {
+            animation: ring 1.6s ease-out .8s infinite
+        }
+        
+        .bar {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 4vw calc(12px + env(safe-area-inset-bottom, 0px));
+            background: color-mix(in srgb, var(--bg) 88%, transparent);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid var(--line)
+        }
+        
+        .dots {
+            flex: 1;
+            display: flex;
+            gap: 6px;
+            justify-content: center
+        }
+        
+        .dots button {
+            all: unset;
+            cursor: pointer;
+            height: 8px;
+            flex: 1;
+            max-width: 36px;
+            border-radius: 6px;
+            background: var(--line);
+            transition: background .3s
+        }
+        
+        .dots button.on {
+            background: var(--green)
+        }
+        
+        .nav {
+            font: 600 1rem 'Sarabun', sans-serif;
+            border: 0;
+            border-radius: 12px;
+            padding: .55em 1.2em;
+            background: var(--green);
+            color: var(--bg);
+            cursor: pointer
+        }
+        
+        .nav:disabled {
+            opacity: .3;
+            cursor: default
+        }
+        
+        .nav:focus-visible,
+        .dots button:focus-visible {
+            outline: 3px solid var(--amber);
+            outline-offset: 2px
+        }
+        
+        @media (max-width:820px) {
+            .slide {
+                grid-template-columns: 1fr;
+                align-content: start;
+                gap: 1.2rem;
+                padding-top: 4vh
+            }
+            .slide.full,
+            .dark {
+                align-content: center
+            }
+            .gauge,
+            .heart {
+                margin-top: 1rem
+            }
+        }
+        
+        @media (prefers-reduced-motion:reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: .01s!important;
+                animation-delay: 0s!important;
+                transition-duration: .01s!important
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="deck"></div>
+    <nav class="bar" aria-label="ควบคุมสไลด์">
+        <button class="nav" id="prev">ก่อนหน้า</button>
+        <div class="dots" id="dots"></div>
+        <button class="nav" id="next">ถัดไป</button>
+    </nav>
+    <script>
+        var P = {
+            heart: '<path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6C19 16.5 12 21 12 21z"/>',
+            drop: '<path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/>',
+            flame: '<path d="M12 3c1 4 5 5 5 10a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-3-1-5 1-9z"/>',
+            shield: '<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>',
+            bug: '<path d="M9 8a3 3 0 0 1 6 0v8a3 3 0 0 1-6 0z"/><path d="M5 9l4 2M19 9l-4 2M5 15l4-2M19 15l-4-2M9.5 5L8 3M14.5 5L16 3"/>',
+            snow: '<path d="M12 3v18M4 7.5l16 9M4 16.5l16-9"/>',
+            alert: '<path d="M12 4l9 16H3z"/><path d="M12 10v4M12 17v.01"/>',
+            phone: '<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/>',
+            users: '<path d="M16 20v-1a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v1"/><circle cx="10" cy="8" r="3"/><path d="M20 20v-1a3 3 0 0 0-2.5-3M16 5.3a3 3 0 0 1 0 5.4"/>'
+        };
+
+        function ic(k) {
+            return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + P[k] + '</svg>'
+        }
+        var T = [{
+            k: 'assess',
+            i: 'shield',
+            c: '#0F8A6A',
+            t: 'ประเมินสถานการณ์ <em>ก่อนช่วย</em>',
+            s: ['ดูความปลอดภัยของตัวเรา ผู้ป่วย และคนรอบข้างก่อน', 'ปลุกเรียกและตบไหล่เบา ๆ ดูว่าผู้ป่วยตอบสนองหรือไม่', 'โทร 1669 หรือให้คนใกล้ตัวโทร แล้วบอกที่เกิดเหตุและอาการ', 'ช่วยตามอาการ และอยู่กับผู้ป่วยจนทีมแพทย์มาถึง']
+        }, {
+            k: 'cpr',
+            i: 'heart',
+            c: '#D7263D',
+            t: 'หมดสติ ไม่หายใจ: <em>ทำ CPR</em>',
+            h: ['110', 'ครั้ง/นาที'],
+            s: ['วางผู้ป่วยนอนหงายบนพื้นแข็ง', 'วางมือซ้อนกันที่กลางหน้าอก แขนตรง', 'กดลึกประมาณ 5–6 ซม. ปล่อยให้อกคืนตัวสุด', 'ใช้เครื่อง AED ทันทีที่มี และทำต่อจนทีมแพทย์มาถึง']
+        }, {
+            k: 'bleed',
+            i: 'drop',
+            c: '#D7263D',
+            t: 'แผล<em>มีเลือดออก</em>',
+            s: ['สวมถุงมือหรือใช้ถุงพลาสติกกั้น ป้องกันการสัมผัสเลือด', 'กดตรงแผลด้วยผ้าสะอาดให้แน่น อย่าเปิดดูบ่อย', 'ยกส่วนที่เลือดออกให้สูงกว่าระดับหัวใจ', 'ถ้าเลือดซึมทะลุผ้า ให้วางผ้าทับเพิ่มโดยไม่ดึงผืนเดิมออก'],
+            w: 'เลือดไม่หยุดภายใน 10 นาที หรือแผลลึกมาก โทร 1669'
+        }, {
+            k: 'burn',
+            i: 'flame',
+            c: '#E8590C',
+            t: 'น้ำร้อนลวก <em>ไฟไหม้</em>',
+            g: ['10–20', 'นาที', 'ล้างด้วยน้ำสะอาดไหลผ่านเบา ๆ'],
+            s: ['ถอดเครื่องประดับและเสื้อผ้าที่ไม่ติดแผลออก', 'คลุมแผลหลวม ๆ ด้วยผ้าสะอาดหรือพลาสติกใส', 'ไม่เจาะตุ่มพอง ไม่ทายาสีฟัน น้ำปลา หรือเนย']
+        }, {
+            k: 'choke',
+            i: 'alert',
+            c: '#2F6FDE',
+            t: 'สำลักอาหาร <em>ติดคอ</em>',
+            s: ['ถามว่า "สำลักหรือเปล่า" ถ้าพูดหรือไอแรงได้ ให้กระตุ้นให้ไอต่อ', 'ถ้าพูดไม่ได้ ตบหลังระหว่างสะบักแรง ๆ 5 ครั้ง', 'กดท้องเหนือสะดือขึ้นด้านบน 5 ครั้ง (เด็กทารกใช้การกดหน้าอก)', 'สลับตบหลังกับกดท้องจนสิ่งแปลกปลอมหลุด หรือผู้ป่วยหมดสติ ให้เริ่ม CPR']
+        }, {
+            k: 'nose',
+            i: 'drop',
+            c: '#E0457B',
+            t: 'เลือด<em>กำเดาไหล</em>',
+            l: 'เกิดจากการกระทบกระแทก การเป็นหวัด การสั่งน้ำมูก การติดเชื้อในช่องจมูก หรืออากาศหนาวเย็น',
+            g: ['10', 'นาที', 'บีบปลายจมูกไว้ ถ้าเลือดยังไหลให้บีบต่ออีก 10 นาที'],
+            s: ['ให้ผู้ป่วยนั่งนิ่ง ๆ เอนตัวไปข้างหน้าเล็กน้อย', 'บีบปลายจมูกไว้ และให้หายใจทางปาก', 'ถ้ามีเลือดออกมาก ให้บ้วนเลือดหรือน้ำลายลงในอ่างหรือภาชนะรองรับ', 'เมื่อเลือดหยุดแล้ว ใช้ผ้าสะอาดเช็ดบริเวณจมูกและปาก ห้ามสั่งน้ำมูก ล้วงแคะ หรือขยี้จมูก'],
+            w: 'เลือดไม่หยุดภายใน 20 นาที ให้รีบนำส่งโรงพยาบาล'
+        }, {
+            k: 'sting',
+            i: 'bug',
+            c: '#C98A00',
+            t: 'ถูก<em>แมลงกัดต่อย</em>',
+            l: 'ผึ้ง ต่อ แตน มักทิ้งเหล็กในไว้ที่แผล พิษมักมีฤทธิ์เป็นกรด ทำให้บวมแดง คัน และปวด',
+            s: ['ใช้ลูกกุญแจที่มีรูกดตรงจุดที่ถูกต่อย แล้วใช้ที่หนีบคีบเหล็กในออก', 'กดหรือบีบบาดแผลไล่น้ำพิษออก', 'ใช้สำลีชุบแอมโมเนียทาบริเวณแผล'],
+            x: ['ลูกกุญแจหรือของที่มีรูกดได้', 'ที่หนีบสะอาด', 'สำลีชุบแอมโมเนีย']
+        }, {
+            k: 'ankle',
+            i: 'snow',
+            c: '#0B84A5',
+            t: 'ข้อเท้า<em>เคล็ด แพลง</em>',
+            g: ['20', 'นาที+', 'ประคบเย็นทันที ห้ามประคบร้อนใน 24 ชั่วโมงแรก'],
+            s: ['ให้ข้อเท้าที่ได้รับบาดเจ็บอยู่นิ่ง ๆ ห้ามเดิน', 'ยกเท้าให้สูงเล็กน้อย เพื่อห้ามเลือดและลดบวม', 'ประคบด้วยความเย็นทันที', 'ยึดข้อเท้าให้นิ่งด้วยผ้ายืด ถ้าสวมรองเท้าผูกเชือก ให้คลายเชือกแต่ไม่ต้องถอดรองเท้า', 'ถ้าปฐมพยาบาลแล้วอาการไม่ดีขึ้น ให้รีบนำส่งโรงพยาบาล'],
+            w: 'ผู้สูงอายุอาจมีกระดูกบริเวณข้อเท้าหักร่วมด้วย'
+        }];
+        var M = [
+            ['นายกฤษณพล สุวรรณทา', 7],
+            ['นายนรธีร์ ดอนบ้านเขียว', 9],
+            ['นาย วิชวิสิฐ คำสายอินทร์', 11],
+            ['น.ส. สุทธิดา ในอินทร์', 18],
+            ['น.ส. ปภัสราพร คำภา', 25],
+            ['น.ส. พิมพ์รภัทร อาศาจิตร', 26],
+            ['น.ส. สุภัคตา ผ่องศรี', 32]
+        ];
+
+        function topic(o) {
+            var left = '<div><div class="tile">' + ic(o.i) + '</div><h2>' + o.t + '</h2>' + (o.l ? '<p class="lead">' + o.l + '</p>' : '');
+            if (o.h) left += '<div class="heart"><div><b>' + o.h[0] + '</b><br>' + o.h[1] + '</div></div>';
+            if (o.g) left += '<div class="gauge"><svg viewBox="0 0 200 200"><circle class="t" cx="100" cy="100" r="84"/><circle class="p" cx="100" cy="100" r="84"/></svg><div class="gn"><b>' + o.g[0] + '</b><span>' + o.g[1] + '</span></div></div><p class="cap">' + o.g[2] + '</p>';
+            left += '</div>';
+            var n = o.s.length,
+                r = '<div><ol class="steps">' + o.s.map(function(s, i) {
+                    return '<li style="--i:' + i + '"><span class="n">' + (i + 1) + '</span><span>' + s + '</span></li>'
+                }).join('') + '</ol>';
+            if (o.x) r += '<div class="chips" style="--i:' + n + '"><b>อุปกรณ์:</b>' + o.x.map(function(x) {
+                return '<span class="pill">' + x + '</span>'
+            }).join('') + '</div>';
+            if (o.w) r += '<div class="alert" style="--i:' + n + '">' + ic('alert') + '<span>' + o.w + '</span></div>';
+            return '<section class="slide" style="--c:' + o.c + '">' + left + r + '</div></section>';
+        }
+        var H = '<section class="slide dark active"><svg class="cross" viewBox="0 0 100 100" aria-hidden="true"><rect x="35" y="5" width="30" height="90" rx="8" fill="#fff"/><rect x="5" y="35" width="90" height="30" rx="8" fill="#fff"/><rect x="43" y="13" width="14" height="74" rx="4" fill="#D7263D"/><rect x="13" y="43" width="74" height="14" rx="4" fill="#D7263D"/></svg><h1>การปฐมพยาบาล<br>เบื้องต้น</h1><p class="lead">ช่วยชีวิตได้ ก่อนความช่วยเหลือทางการแพทย์จะมาถึง</p><svg class="ecg" viewBox="0 0 520 60" aria-hidden="true"><path d="M0 30H150L170 30 185 6 205 54 222 18 235 30H340L360 30 375 6 395 54 412 18 425 30H520"/></svg></section>';
+        H += '<section class="slide full" style="--c:#0F8A6A"><div><div class="tile">' + ic('users') + '</div><h2>รายชื่อ<em>สมาชิก</em></h2><ol class="people steps" style="display:grid">' + M.map(function(m, i) {
+            return '<li style="--i:' + i + '"><span class="n">' + (i + 1) + '</span><span>' + m[0] + '<small>เลขที่ ' + m[1] + '</small></span></li>'
+        }).join('') + '</ol></div></section>';
+        H += T.map(topic).join('');
+        H += '<section class="slide dark"><div class="ph">' + ic('phone') + '</div><div class="big">1669</div><h2>สายด่วนการแพทย์ฉุกเฉิน</h2><p class="lead">โทรฟรีตลอด 24 ชั่วโมง บอกที่เกิดเหตุ อาการ และจำนวนผู้ป่วยให้ชัดเจน</p></section>';
+        document.getElementById('deck').innerHTML = H;
+        (function() {
+            var S = [].slice.call(document.querySelectorAll('.slide')),
+                cur = 0,
+                D = document.getElementById('dots');
+            var pv = document.getElementById('prev'),
+                nx = document.getElementById('next');
+            S.forEach(function(_, i) {
+                var b = document.createElement('button');
+                b.setAttribute('aria-label', 'สไลด์ ' + (i + 1));
+                b.onclick = function() {
+                    show(i)
+                };
+                D.appendChild(b)
+            });
+
+            function show(n, first) {
+                n = Math.max(0, Math.min(S.length - 1, n));
+                S.forEach(function(s, i) {
+                    s.classList.remove('active', 'prev');
+                    if (i < n) s.classList.add('prev')
+                });
+                void S[n].offsetWidth;
+                S[n].classList.add('active');
+                cur = n;
+                [].forEach.call(D.children, function(b, i) {
+                    b.className = i === n ? 'on' : ''
+                });
+                pv.disabled = n === 0;
+                nx.disabled = n === S.length - 1;
+                try {
+                    if (!first) history.replaceState(null, '', '#' + (n + 1))
+                } catch (e) {}
+            }
+            pv.onclick = function() {
+                show(cur - 1)
+            };
+            nx.onclick = function() {
+                show(cur + 1)
+            };
+            document.addEventListener('keydown', function(e) {
+                if (['ArrowRight', 'PageDown', ' '].indexOf(e.key) > -1) {
+                    e.preventDefault();
+                    show(cur + 1)
+                }
+                if (['ArrowLeft', 'PageUp'].indexOf(e.key) > -1) {
+                    e.preventDefault();
+                    show(cur - 1)
+                }
+            });
+            var x0 = null;
+            document.addEventListener('touchstart', function(e) {
+                x0 = e.touches[0].clientX
+            }, {
+                passive: true
+            });
+            document.addEventListener('touchend', function(e) {
+                if (x0 === null) return;
+                var d = e.changedTouches[0].clientX - x0;
+                x0 = null;
+                if (Math.abs(d) > 60) show(cur + (d < 0 ? 1 : -1))
+            });
+            var h = parseInt((location.hash || '').slice(1), 10);
+            show(isNaN(h) ? 0 : h - 1, true);
+        })();
+    </script>
+</body>
+
+</html>
